@@ -158,3 +158,41 @@ grey.dpx             :  512 x  512, 1 channel, uint10 dpx
     oiio:subimages: 1
 Comparing "grey.dpx" and "ref/grey.tif"
 PASS
+Reading gradient.dpx
+gradient.dpx         :   64 x   64, 4 channel, uint16 dpx
+    SHA-1: C379576BBA43B7937C6C9F6FBB3DA95206EA8AC1
+    channel list: R, G, B, A
+    Orientation: 1 (normal)
+    PixelAspectRatio: 1
+    dpx:Colorimetric: "User defined"
+    dpx:DittoKey: 1
+    dpx:EndOfImagePadding: 0
+    dpx:EndOfLinePadding: 0
+    dpx:ImageDescriptor: "RGBA"
+    dpx:Packing: "Filled, method A"
+    dpx:Signal: "Undefined"
+    dpx:Transfer: "Undefined"
+    dpx:Version: "V2.0"
+    oiio:BitsPerSample: 16
+    oiio:subimages: 1
+Comparing "gradient.dpx" and "src/gradient.tif"
+PASS
+Reading gradient-abgr.dpx
+gradient-abgr.dpx    :   64 x   64, 4 channel, uint16 dpx
+    SHA-1: C379576BBA43B7937C6C9F6FBB3DA95206EA8AC1
+    channel list: R, G, B, A
+    Orientation: 1 (normal)
+    PixelAspectRatio: 1
+    dpx:Colorimetric: "User defined"
+    dpx:DittoKey: 1
+    dpx:EndOfImagePadding: 0
+    dpx:EndOfLinePadding: 0
+    dpx:ImageDescriptor: "ABGR"
+    dpx:Packing: "Filled, method A"
+    dpx:Signal: "Undefined"
+    dpx:Transfer: "Undefined"
+    dpx:Version: "V2.0"
+    oiio:BitsPerSample: 16
+    oiio:subimages: 1
+Comparing "gradient-abgr.dpx" and "src/gradient.tif"
+PASS

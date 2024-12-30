@@ -431,6 +431,11 @@ DPXOutput::prep_subimage(int s, bool allocate)
 {
     ImageSpec& spec_s(m_subimage_specs[s]);  // reference the spec
 
+    // check if the client is giving us raw data to write
+    m_rawcolor = spec_s.get_int_attribute("dpx:RawColor")
+                 || spec_s.get_int_attribute("dpx:RawData")  // deprecated
+                 || spec_s.get_int_attribute("oiio:RawColor");
+
     // determine descriptor
     m_desc = get_image_descriptor();
 
@@ -517,13 +522,9 @@ DPXOutput::prep_subimage(int s, bool allocate)
         m_datasize = dpx::kWord;
     }
 
-    // check if the client is giving us raw data to write
-    m_rawcolor = spec_s.get_int_attribute("dpx:RawColor")
-                 || spec_s.get_int_attribute("dpx:RawData")  // deprecated
-                 || spec_s.get_int_attribute("oiio:RawColor");
-
     // see if we'll need to convert color space or not
-    if (m_desc == dpx::kRGB || m_desc == dpx::kRGBA || spec_s.nchannels == 1) {
+    if (spec_s.nchannels == 1 || m_desc == dpx::kRGB || m_desc == dpx::kRGBA
+        || m_desc == dpx::kABGR) {
         // shortcut for RGB/RGBA, and for 1-channel images that don't
         // need to decode color representations.
         m_bytes    = spec_s.scanline_bytes();
@@ -696,6 +697,7 @@ dpx::Descriptor
 DPXOutput::get_image_descriptor()
 {
     const ImageSpec& spec0(m_subimage_specs[0]);
+    string_view request = spec0.get_string_attribute("dpx:ImageDescriptor");
     switch (spec0.nchannels) {
     case 1: {
         std::string name = spec0.channelnames.size() ? spec0.channelnames[0]
@@ -713,8 +715,32 @@ DPXOutput::get_image_descriptor()
         else
             return dpx::kLuma;
     }
-    case 3: return dpx::kRGB;
-    case 4: return dpx::kRGBA;
+    case 3: {
+        if (m_rawcolor) {
+            // Only allow these if we're being given "raw color" data, assumed
+            // to already be in the requested representation. We don't support
+            // converting usual RGB/RGBA to these exotic dpx types.
+            if (request == "CbYCrY")
+                return dpx::kCbYCrY;
+            else if (request == "CbYCr")
+                return dpx::kCbYCr;
+        }
+        return dpx::kRGB;
+    }
+    case 4: {
+        if (m_rawcolor) {
+            // Only allow these if we're being given "raw color" data, assumed
+            // to already be in the requested representation. We don't support
+            // converting usual RGB/RGBA to these exotic dpx types.
+            if (request == "ABGR")
+                return dpx::kABGR;
+            else if (request == "CbYACrYA")
+                return dpx::kCbYACrYA;
+            else if (request == "CbYCrA")
+                return dpx::kCbYCrA;
+        }
+        return dpx::kRGBA;
+    }
     default:
         if (spec0.nchannels <= 8)
             return (dpx::Descriptor)((int)dpx::kUserDefined2Comp

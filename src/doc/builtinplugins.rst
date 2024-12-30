@@ -322,6 +322,18 @@ control aspects of the writing itself:
      - ptr
      - Pointer to a ``Filesystem::IOProxy`` that will handle the I/O, for
        example by writing to memory rather than the file system.
+   * - ``dpx:ImageDescriptor``
+     - string
+     - Requests an encoding for the image data in the file.  Possible values of the ImageDescriptor are:
+	   ``"Red"``, ``"Green"``, ``"Blue"``, ``"Alpha"``, ``"Luma"``,
+	   ``"ColorDifference"``, ``"Depth"``, ``"CompositeVideo"``, ``"RGB"``,
+	   ``"RGBA"``, ``"ABGR"``, ``"CbYCrY"``, ``"CbYACrYA"``, ``"CbYCr"``,
+	   ``"CbYCrA"``. Note that OpenImageIO does not support automatic
+       conversion of regular RGB data to these exotic formats, therefore this
+       request will only be conveyed into the output file if the
+       ``oiio:RawColor`` configuration hint is also set to nonzero, indicating
+       that the caller has ensured that the data presented is already in the
+       correct representation.
 
 **Custom I/O Overrides**
 
@@ -383,7 +395,15 @@ the `set_ioproxy()` methods.
      - Colorimetric specification
    * - ``dpx:ImageDescriptor``
      - string
-     - ImageDescriptor
+     - Describes the encoding of the image data in the file.  Possible values of the ImageDescriptor are:
+	   ``"Red"``, ``"Green"``, ``"Blue"``, ``"Alpha"``, ``"Luma"``,
+	   ``"ColorDifference"``, ``"Depth"``, ``"CompositeVideo"``, ``"RGB"``,
+	   ``"RGBA"``, ``"ABGR"``, ``"CbYCrY"``, ``"CbYACrYA"``, ``"CbYCr"``,
+	   ``"CbYCrA"``, or custom descriptors. Only if the file was opened with
+       the configuration hint ``oiio:RawColor``, the values will be preserved
+       in this representation; otherwise, they will be converted to RGB color
+       space (in which case this attribute only describes the state of the
+       file, not the data in the buffer you read).
    * - ``dpx:Packing``
      - string
      - Image packing method

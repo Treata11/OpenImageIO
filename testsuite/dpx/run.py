@@ -31,3 +31,13 @@ command += oiiotool(OIIO_TESTSUITE_IMAGEDIR+"/dpx_nuke_16bits_rgba.dpx"
                     " -chsum:weight=0.333,0.333,0.333 -chnames Y -ch Y -o grey.dpx")
 command += info_command("grey.dpx", safematch=True)
 command += diff_command("grey.dpx", "ref/grey.tif")
+
+# Test some other combinations of encodings
+# Pre-made: oiiotool -d uint16 -pattern fill:topleft=1,0,0,1:topright=0,1,0,1:bottomleft=0,0,1,1:bottomright=1,1,1,1 64x64 4 -o src/gradient.tif
+command += oiiotool("src/gradient.tif -o gradient.dpx")
+command += info_command("gradient.dpx", safematch=True)
+command += diff_command("gradient.dpx", "src/gradient.tif")
+command += oiiotool("src/gradient.tif -ch A,B,G,R --chnames A,B,G,R -attrib oiio:RawColor 1 -attrib dpx:ImageDescriptor ABGR -o gradient-abgr.dpx")
+command += info_command("gradient-abgr.dpx", safematch=True)
+command += diff_command("gradient-abgr.dpx", "src/gradient.tif")
+
